@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOp
 const Start = ({ navigation }) => {
     const [name, setName] = useState('');
     const colors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
-    const [background, setBackground] = useState('');
+    const [background, setBackground] = useState(colors[3]);
 
     return (
         <View style={styles.container}>
@@ -26,6 +26,7 @@ const Start = ({ navigation }) => {
                     <Text style={styles.chooseBgColor}>Choose a background color:</Text>
                     <View style={styles.colorButtonContainer}>
                         {colors.map((color, index) => (
+                            // Render a TouchableOpacity for each color option
                             <TouchableOpacity
                                 key={index}
                                 accessible={true}
