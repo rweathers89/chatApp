@@ -1,10 +1,26 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import {
+    StyleSheet, View, Text, Button,
+    TextInput, ImageBackground, TouchableOpacity, Alert
+} from 'react-native';
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 const Start = ({ navigation }) => {
+    const auth = getAuth();
     const [name, setName] = useState('');
     const colors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
     const [background, setBackground] = useState(colors[3]);
+
+    const signInUser = () => {
+        signInAnonymously(auth)
+            .then(result => {
+                navigation.navigate("Chat", { userID: result.user.uid, name: name, background: background });
+                Alert.alert("Signed in Successfully!");
+            })
+            .catch((error) => {
+                Alert.alert("Unable to sign in, try later again.");
+            })
+    }
 
     return (
         <View style={styles.container}>
@@ -37,17 +53,22 @@ const Start = ({ navigation }) => {
                                 background === color && styles.selectedColor,
                                 ]}
                                 onPress={() => setBackground(color)}
-                            >
-
-                            </TouchableOpacity>
+                            />
                         ))}
                     </View>
 
+                    {/**to start chat */}
+                    <TouchableOpacity
+                        accessible={true}
+                        accessibilityRole='button'
+                        accessibilityHint='Allows you to enter the chat room'
 
-                    <Button
-                        title="Start Chatting"
-                        onPress={() => navigation.navigate('Chat', { name: name })}
-                    />
+                        onPress={signInUser}
+                        // => navigation.navigate('Chat', { name: name })}
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>Start Chatting</Text>
+                    </TouchableOpacity>
 
                 </View>
             </ImageBackground>
@@ -113,6 +134,16 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         margin: 5
 
+    },
+    button: {
+        alignItems: 'center',
+        backgroundColor: "#757083",
+        padding: 10
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: "#FFFFFF"
     }
 
 
