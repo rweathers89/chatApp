@@ -34,9 +34,13 @@ const Chat = ({ route, navigation, db }) => {
         }
     }, []);
 
-    const onSend = (newMessages) => {
-        addDoc(collection(db, "messages"), newMessages[0])
-        //setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+    const onSend = async (newMessages) => {
+        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+        let newItem = {
+            ...newMessages[0],
+            createdTime: new Date()
+        }
+        await addDoc(collection(db, collectionName), newItem);
     }
 
     const renderBubble = (props) => {
