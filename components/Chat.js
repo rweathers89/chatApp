@@ -5,11 +5,12 @@ import {
 } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
-
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 //import AsyncStorage
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Chat = ({ route, navigation, db, isConnected }) => {
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
     const { name, background, userID } = route.params;
     const [messages, setMessages] = useState([]);
 
@@ -89,6 +90,32 @@ const Chat = ({ route, navigation, db, isConnected }) => {
         setMessages(JSON.parse(cachedMessages));
     }
 
+    const renderCustomActions = (props) => {
+        return <CustomActions onSend={onSend} storage={storage} {...props} />;
+    };
+
+    const renderCustomView = (props) => {
+        const { currentMessage } = props;
+        if (currentMessage.location) {
+            return (
+                <MapView
+                    style={{
+                        width: 150,
+                        height: 100,
+                        borderRadius: 13,
+                        margin: 3
+                    }}
+                    region={{
+                        latitude: currentMessage.location.latitude,
+                        lognitude: currentMessage.location.lognitude,
+                        latitudeDelta: 0.0922,
+                        lognitudeDelta: 0.0421,
+                    }}
+                />
+            );
+        }
+        return null;
+    };
 
     return (
         <View style={[styles.container,
@@ -98,6 +125,8 @@ const Chat = ({ route, navigation, db, isConnected }) => {
                 renderBubble={renderBubble}
                 renderInputToolbar={renderInputToolbar}
                 onSend={messages => onSend(messages)}
+                renderActions={renderCustomActions}
+                renderCustomView={renderCustomView}
                 user={{
                     _id: userID,
                     name: name
